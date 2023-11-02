@@ -136,17 +136,35 @@
 }
 
 
-        function handleSubmit(event) {
+        async function handleSubmit(event) {
             event.preventDefault(); 
 
             const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const name = document.getElementById('name').value;
             const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+
+           let loginData ={
+            name:name,
+            email:email,
+            password:password,
+           }
 
             if (!email.match(emailPattern)) {
                 // console.log('Invalid Email. Please enter a valid email address.');   
                 return false; // Prevent form submission
             }else{
-                console.log("lllllllllllllll");
+               
+                try{
+                    axios.post('http://localhost:8000/expenseData',loginData);
+
+                }catch(err){
+
+                    console.log(err);
+
+                }
+                
+
             }
 
             // const expense = document.getElementById('expense').value;
@@ -230,7 +248,7 @@
      </div>
  
            <div class="form-floating mt-3">
-             <input  type="password" id ="name" class="form-control" placeholder="Enter email" required>
+             <input  type="password" id ="password" class="form-control" placeholder="Enter email" required>
              <label for="name" class="form-label" >Password:</label>
            </div>
          
