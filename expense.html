@@ -115,8 +115,8 @@ var edititemItem=(itemId,data)=>{
             // form.addEventListener('mouseout', function() {
             //     this.style.backgroundColor = ''; 
             // });
-            // const expenseData = localStorage.getItem('expenses');
-            // const allExpenses = JSON.parse(expenseData);
+            // const expense = localStorage.getItem('expenses');
+            // const allExpenses = JSON.parse(expense);
             // if (allExpenses && Array.isArray(allExpenses)) {
             //     // Loop through each expense and display it
             //     allExpenses.forEach((expense, index) => {
@@ -131,7 +131,7 @@ var edititemItem=(itemId,data)=>{
             //     console.log('No expenses found in local storage.');
             //     }
 
-                axios.get('http://localhost:8000/expenseData').then((res)=>{
+                axios.get('http://localhost:8000/expense').then((res)=>{
 
                             res.data.data.forEach((expense, index) => {
                             // Create HTML elements to display each expense
@@ -174,7 +174,7 @@ var edititemItem=(itemId,data)=>{
                                  const itemId = listItem.getAttribute('data-id');
                                  const elementToRemove = document.querySelector(`li[data-id="${itemId}"]`);
 
-                                axios.delete(`http://localhost:8000/expenseData/${itemId}`).then((res)=>{
+                                axios.delete(`http://localhost:8000/expense/${itemId}`).then((res)=>{
                                     if(res.status==200){
                                         elementToRemove.remove();
                                     }
@@ -204,7 +204,7 @@ var edititemItem=(itemId,data)=>{
                         const listItem = e.target.closest('li');
                         const itemId = listItem.getAttribute('data-id');
                         let edit=null;
-                        axios.get('http://localhost:8000/expenseData').then((res)=>{
+                        axios.get('http://localhost:8000/expense').then((res)=>{
                             edit=res.data.data.find(data=>data.id==itemId);
                             console.log(edit);
                              populateInputFields(edit);
@@ -258,7 +258,7 @@ var edititemItem=(itemId,data)=>{
           
             if(editItemId){
 
-                axios.put(`http://localhost:8000/expenseData`,newExpense).then((res)=>{
+                axios.put(`http://localhost:8000/expense`,newExpense).then((res)=>{
 
                     if(res.status==200){
                         edititemItem(editItemId,newExpense);
@@ -270,7 +270,7 @@ var edititemItem=(itemId,data)=>{
                 })
             }else{
                 
-                axios.post('http://localhost:8000/expenseData',newExpense).then((res)=>{
+                axios.post('http://localhost:8000/expense',newExpense).then((res)=>{
                     console.log(res);
                 if(res){
 

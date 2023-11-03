@@ -136,7 +136,7 @@ function showError(errorMessage) {
                    console.log(data);
                     if(data.status===200){
                         alert(data.data.message)
-                        
+                        window.location.href = 'expense.html';
                     }
                 }catch(err){
                     showError(err.response.data.message)
