@@ -9,12 +9,12 @@ const app = express();
 
 app.use(cors());
 
-const appRoutes = require('./routes/expenses.js');
+const userRouter = require('./routes/userRouter.js');
 
 app.use(express.json());
 
 
-app.use('/expenseData', appRoutes);
+app.use('/auth', userRouter);
 
 
 app.use(errorController.get404);
