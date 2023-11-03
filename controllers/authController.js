@@ -79,7 +79,7 @@ let signin = async (req, res, next)=>{
             // }
             res.status(404).json({
                 error: true,
-                message: "   Email",
+                message: "User not found",
                 data: null
             });
         
