@@ -56,11 +56,6 @@
                 width: 450px; */
                 border: 1px solid orange;
             }
-            .bttom-text{
-                margin-top: 10px;
-                display: flex;
-                justify-content: space-between;
-            }
             #time{
                 display: flex;
                 margin-top: 8px;
@@ -83,11 +78,6 @@
             const form =document.querySelector("form");
             const buton =document.querySelector("subut");
 
-
-            document.getElementById('loginButton').addEventListener('click', function() {
-                window.location.href = 'signup.html'; // Redirects to the signup page
-            });
-
             form.addEventListener('submit', e=>{
                 if(!form.checkValidity()){
                     e.preventDefault()
@@ -98,8 +88,57 @@
      
                  
 
-                   
-                
+                    function removeItem(e){
+                        if(e.target.classList.contains('delete')){
+                            if(confirm('Are You Sure?')){
+                                const listItem = e.target.closest('li');
+                                 const itemId = listItem.getAttribute('data-id');
+                                 const elementToRemove = document.querySelector(`li[data-id="${itemId}"]`);
+
+                                axios.delete(`http://localhost:8000/expenseData/${itemId}`).then((res)=>{
+                                    if(res.status==200){
+                                        elementToRemove.remove();
+                                    }
+                                    }).catch((err)=>{
+                                        console.log(err);
+                                    })
+                            }
+                        }
+                    }
+
+                 function populateInputFields(descpart) {
+                    // const userData = JSON.parse(localStorage.getItem(descpart));
+                     // console.log(userData);
+                    //  Check if data exists
+                    if (descpart) {
+                     // Populate input fields
+                        document.getElementById('expense').value = descpart.expense;
+                        document.getElementById('desc').value = descpart.description;
+                        document.getElementById('categorySelect').value=descpart.category;
+                        const editItemIdInput = document.getElementById('editItemId');
+                       editItemIdInput.value = descpart.id;
+                    }
+                }
+
+                    function editItem(e){
+                    if(e.target.classList.contains('edit')){
+                        const listItem = e.target.closest('li');
+                        const itemId = listItem.getAttribute('data-id');
+                        let edit=null;
+                        axios.get('http://localhost:8000/expenseData').then((res)=>{
+                            edit=res.data.data.find(data=>data.id==itemId);
+                            console.log(edit);
+                             populateInputFields(edit);
+                            }).catch((err)=>{
+
+                            console.log(err);
+                            })
+
+                      
+                        // localStorage.removeItem(parts[1]);
+                        // itemList.removeChild(list);
+                    }
+                }
 
                 
               
@@ -119,33 +158,90 @@ function showError(errorMessage) {
 
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            // const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+            const name = document.getElementById('name').value;
+            const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
 
            let loginData ={
+            name:name,
             email:email,
             password:password,
            }
-            console.log(loginData);
-            // if (!email.match(emailPattern)) {
-            //     // console.log('Invalid Email. Please enter a valid email address.');   
-            //     return false; // Prevent form submission
-            // }else{
+
+            if (!email.match(emailPattern)) {
+                // console.log('Invalid Email. Please enter a valid email address.');   
+                return false; // Prevent form submission
+            }else{
                
                 try{
-                   let data= await axios.post('http://localhost:8000/auth/signin',loginData);
-                   console.log(data);
-                    if(data.status===200){
-                        alert(data.data.message)
+                   let {data}= await axios.post('http://localhost:8000/auth/signup',loginData);
+                //    console.log(data);
+                //     if(data.status===409){
+                //          showError(data.message)
                         
-                    }
+                //     }
                 }catch(err){
                     showError(err.response.data.message)
 
                 }
                 
 
+            }
+
+            // const expense = document.getElementById('expense').value;
+            // const desc = document.getElementById('desc').value;
+            // const category = document.getElementById('categorySelect').value;
+            // const editItemId = document.getElementById('editItemId').value;
+            // console.log(editItemId);
+            // let newExpense=null;
+            // if(!editItemId){
+            //     newExpense = {
+            //             expense  : expense,
+            //             description : desc,
+            //             category : category,
+            //        }
+            // }else{
+            //    newExpense = {
+            //             id:editItemId,
+            //             expense  : expense,
+            //             description : desc,
+            //             category : category,
+            //        }
             // }
 
+            // let myUser=JSON.stringify(       newExpense)
+            // localStorage.setItem(desc,myUser);
+
+            // const userData = localStorage.getItem(desc);
+            // const parsedUserData = JSON.parse(userData);
+
+          
+            // if(editItemId){
+
+            //     axios.put(`http://localhost:8000/expenseData`,newExpense).then((res)=>{
+
+            //         if(res.status==200){
+            //             edititemItem(editItemId,newExpense);
+            //         }
+
+
+            //     }).catch((err)=>{
+            //     console.log(err);
+            //     })
+            // }else{
+                
+            //     axios.post('http://localhost:8000/expenseData',newExpense).then((res)=>{
+            //         console.log(res);
+            //     if(res){
+
+            //         addIteme(res.data.data);
+            //     }
+
+            //     }).catch((err)=>{
+
+            //     console.log(err);
+            //     })
+            // }
+                
         }
     </script>
     <div class="container">
@@ -177,6 +273,10 @@ function showError(errorMessage) {
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                   </div>      
               </div>
+        <div class="form-floating mt-5">
+         <input  type="text" id ="name"class="form-control" placeholder="Enter email" required>
+         <label for="name" class="form-label" >Name:</label>
+       </div>
              
        <div class="mt-3">
          <div class="form-floating mt-3">
@@ -194,12 +294,7 @@ function showError(errorMessage) {
            <input type="hidden" id="editItemId" name="editItemId">
          
              
-          <input type="submit"  id ="sub-button" class="subut mt-5" value="Login">
-          <!-- <input type="submit"  id ="sub-button" class="subut" value="Signup"> -->
-          <div class="bttom-text">
-            <a href="signup.html" id="loginButton">Forgot password?</a>
-             <span> Don't have an account?<a href="signup.html" id="loginButton">sign Up</a></span>
-          </div>
+          <input type="submit"  id ="sub-button" class="subut mt-5" value="Sign Up">
      </form>
   </div>
 </div>

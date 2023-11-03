@@ -40,6 +40,57 @@ const signup = async (req, res, next) => {
 
 }
 
+let signin = async (req, res, next)=>{
+    console.time("authController : signup");
+    let {email,password } = req.body;
+    email = email.toLowerCase();
+    console.log("authController : signup :: email is ", email);
+    try {
+        const UserData = await userModel.findOne({ where: { email: email } });
+        // when the user already register.
+        console.log(UserData);
+        if (UserData) {
+            if(UserData.password===password){
+                res.status(200).json({
+                    error: false,
+                    message: "Login Succesfull",
+                    data: null
+                });    
+            }else{
+                res.status(404).json({
+                    error: true,
+                    message: "Invalid Password",
+                    data: null
+                });  
+            }
+            
+        } else {
+
+            // let userResponse = await userModel.create({
+            //         name,email, password,
+            //     })
+
+            // if(userResponse){
+            //     res.status(200).json({
+            //         error: false,
+            //         message: 'Register Successfully',
+            //         data: [userResponse]
+            //     })
+            // }
+            res.status(404).json({
+                error: true,
+                message: "   Email",
+                data: null
+            });
+        
+        }
+    } catch (err) {
+        next(err)
+    } finally {
+        console.timeEnd("authController : signup");
+    }
+}
 module.exports={
     signup,
+    signin,
 }

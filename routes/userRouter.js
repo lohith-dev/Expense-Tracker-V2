@@ -18,6 +18,7 @@ const router = express.Router();
 // router.delete('/:id', expController.deleteAppntdata);
 
 router.post('/signup',authController.signup)
+router.post('/signin',authController.signin)
 
 
 // /admin/products => GET
