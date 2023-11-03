@@ -1,5 +1,6 @@
 const userModel = require('../model/User.js');
 const Sequelize = require('../util/database.js')
+let bcrypt = require('bcrypt');
 
 const signup = async (req, res, next) => {
 
@@ -18,9 +19,12 @@ const signup = async (req, res, next) => {
                 data: null
             });
         } else {
+            let saltRound = 10;
+            let salt = await bcrypt.genSalt(saltRound);
+            let hashedPassword = await bcrypt.hash(password, salt)
 
             let userResponse = await userModel.create({
-                    name,email, password,
+                    name,email, password:hashedPassword,
                 })
 
             if(userResponse){
@@ -48,9 +52,10 @@ let signin = async (req, res, next)=>{
     try {
         const UserData = await userModel.findOne({ where: { email: email } });
         // when the user already register.
-        console.log(UserData);
+        console.log(UserData.password);
         if (UserData) {
-            if(UserData.password===password){
+            let isPasswordValid = await bcrypt.compare(req.body.password,UserData.password);
+            if(isPasswordValid){
                 res.status(200).json({
                     error: false,
                     message: "Login Succesfull",
