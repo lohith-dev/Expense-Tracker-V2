@@ -6,16 +6,18 @@ const expController = require('../controllers/expenseController.js');
 
 const router = express.Router();
 
+const {authenticate} = require('../middleware/auth.js');
+
 // /admin/add-product => GET 
-router.get('/', expController.getappntdata);
+router.get('/', authenticate,expController.getappntdata);
 
 router.get('/:id', expController.getSingleAppntData);
 
-router.post('/', expController.postAppntdata);
+router.post('/',authenticate,expController.postAppntdata);
 
-router.put('/',expController.updAppntdata)
+router.put('/',authenticate,expController.updAppntdata)
 
-router.delete('/:id', expController.deleteAppntdata);
+router.delete('/:id',authenticate, expController.deleteAppntdata);
 
 
 

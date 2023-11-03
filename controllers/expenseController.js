@@ -3,9 +3,9 @@ const Sequelize = require('../util/database.js')
 
 const getappntdata = async (req,res)=>{
      try{
-            const userData = await expenseModel.findAll();
+        let {id}=req.user;
+            const userData = await expenseModel.findAll({where:{id:id}});
       
-           
             let noOfRecords = userData.length;
             res.status(200).json(
                 {
@@ -42,10 +42,10 @@ const postAppntdata = async (req,res)=>{
     try{
    
         let {expense,description,category}=req.body;
-      
-       
+        let {id}=req.user;
+       console.log("useridddddddddddddd",id);
         let appntResponse = await expenseModel.create({
-            expense,description,category,
+            expense,description,category,userId:id
         })
            
            res.status(201).json({

@@ -1,6 +1,7 @@
 const userModel = require('../model/User.js');
 const Sequelize = require('../util/database.js')
 let bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
 
 const signup = async (req, res, next) => {
 
@@ -54,12 +55,16 @@ let signin = async (req, res, next)=>{
         // when the user already register.
         console.log(UserData.password);
         if (UserData) {
+            let {id,email}=UserData;
             let isPasswordValid = await bcrypt.compare(req.body.password,UserData.password);
+            const payload = {id,email};
+            const token = jwt.sign(payload, "thisissecreateKey", { expiresIn: "24hr" });
+                
             if(isPasswordValid){
                 res.status(200).json({
                     error: false,
                     message: "Login Succesfull",
-                    data: null
+                    token: token
                 });    
             }else{
                 res.status(404).json({

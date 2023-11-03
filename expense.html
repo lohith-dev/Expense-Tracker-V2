@@ -130,8 +130,9 @@ var edititemItem=(itemId,data)=>{
             //     // Handle the case where no expenses are found in local storage
             //     console.log('No expenses found in local storage.');
             //     }
-
-                axios.get('http://localhost:8000/expense').then((res)=>{
+            const token = JSON.parse(localStorage.getItem('token'));
+            console.log(token);
+                axios.get('http://localhost:8000/expense',{headers:{"Authorization":token}}).then((res)=>{
 
                             res.data.data.forEach((expense, index) => {
                             // Create HTML elements to display each expense
@@ -255,7 +256,8 @@ var edititemItem=(itemId,data)=>{
             // const userData = localStorage.getItem(desc);
             // const parsedUserData = JSON.parse(userData);
 
-          
+            const token = JSON.parse(localStorage.getItem('token'));    
+            console.log("lohhhhhhh",token);
             if(editItemId){
 
                 axios.put(`http://localhost:8000/expense`,newExpense).then((res)=>{
@@ -270,12 +272,16 @@ var edititemItem=(itemId,data)=>{
                 })
             }else{
                 
-                axios.post('http://localhost:8000/expense',newExpense).then((res)=>{
-                    console.log(res);
-                if(res){
+                axios.post('http://localhost:8000/expense',newExpense, {
+                        headers: {
+                            'Authorization': `${token}`
+                        }
+                }).then((res)=>{
+                        console.log(res);
+                        if(res){
 
-                    addIteme(res.data.data);
-                }
+                            addIteme(res.data.data);
+                        }
 
                 }).catch((err)=>{
 
