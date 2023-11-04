@@ -4,7 +4,7 @@ const Sequelize = require('../util/database.js')
 const getappntdata = async (req,res)=>{
      try{
         let {id}=req.user;
-            const userData = await expenseModel.findAll({where:{id:id}});
+            const userData = await expenseModel.findAll({where:{user_id:id}});
       
             let noOfRecords = userData.length;
             res.status(200).json(
@@ -97,7 +97,8 @@ const deleteAppntdata = async (req,res)=>{
         console.log(id);
        let deleted= expenseModel.destroy({
             where: {
-              id: id
+              id: id,
+              user_id: req.user.id
             }
           })
        if(deleted){

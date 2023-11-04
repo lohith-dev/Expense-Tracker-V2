@@ -1,5 +1,5 @@
 let jwt = require('jsonwebtoken');
-
+const User = require('../model/User.js');
 const authenticate = (req, res, next) => {
     // console.debug("authorization --> " + req.headers["authorization"]);
     console.log("jhkhkjhkjhkjh",req.headers["authorization"]);
@@ -10,11 +10,18 @@ const authenticate = (req, res, next) => {
         console.log("sddddddddddddddddddddddddddd",token);
 
         const payload = jwt.verify(token, "thisissecreateKey")
-        console.log("jjjjjjjjjjj",payload);
+        // console.log("jjjjjjjjjjj",payload);
 
         const decode = jwt.decode(token);
-        req.user=decode;
-        next();
+        // console.log(decode);
+            User.findOne({where:{id:decode.id}})
+                .then(user => {
+                 req.user = user;
+                 next();
+                })
+    .catch(err => console.log(err));
+        // req.user=decode;
+        // next();
     } else {
         res.status(401).json({
             error: true,

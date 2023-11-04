@@ -102,36 +102,41 @@ var edititemItem=(itemId,data)=>{
                 form.classList.add('was-validated')
             })
 
-        //     form.addEventListener('click', function() {
-        //     this.style.background = 'green'; 
-        // });
+            document.getElementById('rzp-button1').onclick = async function(e){
+                const token =JSON.parse(localStorage.getItem('token'));
+                console.log(token);
+                const response = await axios.get('http://localhost:8000/purchase/premiummembership',{headers:{"Authorization":token}});
+                console.log(response.data.key_id);
+                var options = {
+                    "key":response.data.key_id,
+                    "order_id":response.data.order.id,
+                    "handler":async function(response) {
+                        await axios.post('http://localhost:8000/purchase/updatetransactionstatus',{
+                            order_id : options.order_id,
+                            payment_id : response.razorpay_payment_id,
+                        },{headers:{"Authorization":token}})
 
-          // Mouseover event
-            // form.addEventListener('mouseover', function() {
-            //     this.style.backgroundColor = 'yellow';
-            // });
+                        alert("You are a preimum User Now")
+                    }
+                }
+                const rzp1= new Razorpay(options);
+                rzp1.open();
+                e.preventDefault();
 
-            // // Mouseout event
-            // form.addEventListener('mouseout', function() {
-            //     this.style.backgroundColor = ''; 
-            // });
-            // const expense = localStorage.getItem('expenses');
-            // const allExpenses = JSON.parse(expense);
-            // if (allExpenses && Array.isArray(allExpenses)) {
-            //     // Loop through each expense and display it
-            //     allExpenses.forEach((expense, index) => {
-            //         // Create HTML elements to display each expense
-            //         const parentDiv = document.getElementById('parentDiv');
-            //         const childParagraph = document.createElement('li');
-            //         childParagraph.textContent = `Expense ${index + 1}: ${expense.expense}, Description: ${expense.desc}, Phone: ${expense.phone}, Date: ${expense.date}, Time: ${expense.time}`;
-            //         parentDiv.appendChild(childParagraph);
-            //     });
-            //     } else {
-            //     // Handle the case where no expenses are found in local storage
-            //     console.log('No expenses found in local storage.');
-            //     }
+                rzp1.on('payment.failed',function(response){
+                  const {error}=response;
+                  console.log(error.metadata.payment_id);
+                    // alert("something went wrong")
+                    axios.post('http://localhost:8000/purchase/updatetransactionFailedStatus',{
+                            order_id : error.metadata.order_id,
+                            payment_id :error.metadata.payment_id,
+                        },{headers:{"Authorization":token}}).catch((err)=>{
+                            console.log(err);
+                        })
+                })
+            }
             const token = JSON.parse(localStorage.getItem('token'));
-            console.log(token);
+            // console.log(token);
                 axios.get('http://localhost:8000/expense',{headers:{"Authorization":token}}).then((res)=>{
 
                             res.data.data.forEach((expense, index) => {
@@ -175,7 +180,7 @@ var edititemItem=(itemId,data)=>{
                                  const itemId = listItem.getAttribute('data-id');
                                  const elementToRemove = document.querySelector(`li[data-id="${itemId}"]`);
 
-                                axios.delete(`http://localhost:8000/expense/${itemId}`).then((res)=>{
+                                axios.delete(`http://localhost:8000/expense/${itemId}`,{headers:{"Authorization":token}}).then((res)=>{
                                     if(res.status==200){
                                         elementToRemove.remove();
                                     }
@@ -257,7 +262,7 @@ var edititemItem=(itemId,data)=>{
             // const parsedUserData = JSON.parse(userData);
 
             const token = JSON.parse(localStorage.getItem('token'));    
-            console.log("lohhhhhhh",token);
+            // console.log("lohhhhhhh",token);
             if(editItemId){
 
                 axios.put(`http://localhost:8000/expense`,newExpense).then((res)=>{
@@ -292,6 +297,8 @@ var edititemItem=(itemId,data)=>{
         }
     </script>
     <div class="container">
+        <button id="rzp-button1">Buy Premium</button>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
        
     <form novalidate onSubmit="handleSubmit(event)">
 

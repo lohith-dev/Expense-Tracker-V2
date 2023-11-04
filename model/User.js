@@ -1,8 +1,9 @@
 const Sequelize = require('sequelize');
 const expenseModel= require('./Expense.js')
-
 const sequelize  = require('../util/database');
-console.log(expenseModel);
+const orderModel = require('./Order.js')
+
+
 const User = sequelize.define('User',{
   id: {
     type: Sequelize.INTEGER,
@@ -22,6 +23,9 @@ const User = sequelize.define('User',{
   password :{  
     type: Sequelize.STRING,
     allowNull: false,
+  },
+  ispremiumuser :{  
+    type: Sequelize.BOOLEAN,
   }
 },
 {
@@ -31,5 +35,8 @@ const User = sequelize.define('User',{
 
 User.hasMany(expenseModel, { foreignKey: 'userId' });  
 expenseModel.belongsTo(User, { foreignKey: 'userId' });
+
+User.hasMany(orderModel, { foreignKey: 'userId' });  
+orderModel.belongsTo(orderModel, { foreignKey: 'userId' });
 
 module.exports = User;
