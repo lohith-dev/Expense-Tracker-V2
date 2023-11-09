@@ -55,9 +55,10 @@ let signin = async (req, res, next)=>{
         // when the user already register.
         console.log(UserData.password);
         if (UserData) {
-            let {id,email}=UserData;
+            let {id,email,ispremiumuser}=UserData;
+            // console.log("ddddddddddffffffff",UserData);
             let isPasswordValid = await bcrypt.compare(req.body.password,UserData.password);
-            const payload = {id,email};
+            const payload = {id,email,ispremiumuser};
             const token = jwt.sign(payload, "thisissecreateKey", { expiresIn: "24hr" });
                 
             if(isPasswordValid){

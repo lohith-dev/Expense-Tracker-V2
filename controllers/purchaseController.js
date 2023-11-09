@@ -1,7 +1,8 @@
 const Razorpay =require('razorpay');
 const Sequelize = require('../util/database.js');
 const Order = require('../model/Order.js');
-
+// let bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
 
 const purchasePremium = async (req,res)=>{
 // console.log("oooooo",req.user);
@@ -39,8 +40,13 @@ const updateTransacitonStatus = async (req,res)=>{
 
         Order.findOne({where:{Orderid:order_id}}).then(order=>{
             order.update({paymentid:payment_id,status:'SUCCESSFUL'}).then(()=>{
-                req.user.update({ispremiumuser : true}).then(()=>{
-                    return res.status(202).json({success:true,message:"Transaction Successful"})
+                req.user.update({ispremiumuser : true}).then(async({dataValues})=>{
+                
+                 let {id,email,ispremiumuser}=dataValues;
+                 const payload = {id,email,ispremiumuser};
+                 const token = jwt.sign(payload, "thisissecreateKey", { expiresIn: "24hr" });
+
+                    return res.status(202).json({token:token,success:true,message:"Transaction Successful"})
                 }).catch(err=>{
                     throw new Error(err);
                 })

@@ -12,8 +12,8 @@ app.use(cors());
 
 const userRouter = require('./routes/userRouter.js');
 const expenseRouter = require('./routes/expenseRouter.js');
-
-const purchaseRouter = require('./routes/pruchaseRouter.js')
+const purchaseRouter = require('./routes/pruchaseRouter.js');
+const leadboardRouter = require('./routes/leadboardRouter.js');
 
 app.use(express.json());
 
@@ -21,6 +21,7 @@ app.use(express.json());
 app.use('/auth', userRouter);
 app.use('/expense', expenseRouter);
 app.use('/purchase', purchaseRouter);
+app.use('/leadboard', leadboardRouter);
 
 
 app.use(errorController.get404);
