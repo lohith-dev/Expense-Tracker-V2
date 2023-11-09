@@ -1,5 +1,7 @@
 const expenseModel = require('../model/Expense.js');
+const userModel = require('../model/User.js')
 const Sequelize = require('../util/database.js')
+const sequelize = require('../util/database.js')
 
 const getappntdata = async (req,res)=>{
      try{
@@ -43,11 +45,20 @@ const postAppntdata = async (req,res)=>{
    
         let {expense,description,category}=req.body;
         let {id}=req.user;
-       console.log("useridddddddddddddd",id);
+
+       let data = await expenseModel.findAll({
+            attributes: ['userId',[sequelize.fn('SUM', sequelize.col('expense')), 'totalExpense']],
+            where:{userId:id},
+            group: ['userId'],  
+        });
+   
+      let totExpense=  parseInt(data[0].dataValues.totalExpense)+parseInt(expense);
         let appntResponse = await expenseModel.create({
             expense,description,category,userId:id
         })
-           
+           if(appntResponse){
+            await userModel.update({totalExpenses:totExpense},{where:{id:id}})
+           }
            res.status(201).json({
             error: false,
             message: 'Appiontments created Successfully',
@@ -94,7 +105,7 @@ const updAppntdata = async (req,res)=>{
 const deleteAppntdata = async (req,res)=>{
     try{
         let id=req.params.id;
-        console.log(id);
+        
        let deleted= expenseModel.destroy({
             where: {
               id: id,

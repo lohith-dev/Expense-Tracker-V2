@@ -26,6 +26,7 @@ const Expense = sequelize.define('expense',{
     allowNull: false,
   },
   
+  
 },
 {
     timestamps: true,
