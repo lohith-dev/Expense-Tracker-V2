@@ -1,7 +1,12 @@
 const userModel = require('../model/User.js');
 const Sequelize = require('../util/database.js')
 let bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const Sib = require('sib-api-v3-sdk')
+
+require('dotenv').config()
+
+
 
 const signup = async (req, res, next) => {
 
@@ -101,7 +106,60 @@ let signin = async (req, res, next)=>{
         console.timeEnd("authController : signup");
     }
 }
+
+// let sendEmail = async (req, res, next)=>{
+
+//     const client = Sib.ApiClient.instance
+//     const apiKey = client.authentications['api-key']
+//     apiKey.apiKey = process.env.API_KEY
+
+//     // let {email } = req.body;
+ 
+//     // try {
+        
+            
+       
+//     // } catch (err) {
+//     //     next(err)
+//     // } finally {
+//     //     console.timeEnd("authController : signup");
+//     // }
+
+//     const tranEmailApi = new Sib.TransactionalEmailsApi()
+//     const sender = {
+//         email: 'srlohith92@gmail.com',
+//         name: 'lohith',
+//     }
+//     const receivers = [
+//         {
+//             email: 'srlohith92@gmail.com',
+//         },
+//     ]
+
+// tranEmailApi
+//     .sendTransacEmail({
+//         sender,
+//         to: receivers,
+//         subject: 'Subscribe to Cules Coding to become a developer',
+//         textContent: `
+//         Cules Coding will teach you how to become {{params.role}} a developer.
+//         `,
+//         htmlContent: `
+//         <h1>Cules Coding</h1>
+//         <a href="https://cules-coding.vercel.app/">Visit</a>
+//                 `,
+//         params: {
+//             role: 'Frontend',
+//         },
+//     })
+//     .then(console.log)
+//     .catch(console.log)
+
+// }
+
+
 module.exports={
     signup,
     signin,
+    // sendEmail
 }

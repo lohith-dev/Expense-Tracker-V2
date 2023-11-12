@@ -14,11 +14,13 @@ const userRouter = require('./routes/userRouter.js');
 const expenseRouter = require('./routes/expenseRouter.js');
 const purchaseRouter = require('./routes/pruchaseRouter.js');
 const leadboardRouter = require('./routes/leadboardRouter.js');
+const passRouter = require('./routes/passwordRouter.js');
 
 app.use(express.json());
 
 
 app.use('/auth', userRouter);
+app.use('/password', passRouter);
 app.use('/expense', expenseRouter);
 app.use('/purchase', purchaseRouter);
 app.use('/leadboard', leadboardRouter);
