@@ -28,7 +28,8 @@ const User = sequelize.define('User',{
     type: Sequelize.BOOLEAN,
   },
   totalExpenses:{
-    type : Sequelize.BIGINT,   
+    type : Sequelize.BIGINT,
+    defaultValue: 0
   }
 },
 {

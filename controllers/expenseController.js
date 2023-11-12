@@ -46,23 +46,23 @@ const postAppntdata = async (req,res)=>{
         let {expense,description,category}=req.body;
         let {id}=req.user;
 
-       let data = await expenseModel.findAll({
-            attributes: ['userId',[sequelize.fn('SUM', sequelize.col('expense')), 'totalExpense']],
-            where:{userId:id},
-            group: ['userId'],  
-        });
-   
-      let totExpense=  parseInt(data[0].dataValues.totalExpense)+parseInt(expense);
-        let appntResponse = await expenseModel.create({
-            expense,description,category,userId:id
-        })
-           if(appntResponse){
-            await userModel.update({totalExpenses:totExpense},{where:{id:id}})
-           }
+        const result = await sequelize.transaction(async (t) => {
+
+            const user = await expenseModel.create({
+                expense,description,category,userId:id
+            }, { transaction: t });
+
+            let totExpense = parseInt(req.user.totalExpenses)+parseInt(expense);
+            await userModel.update({totalExpenses:totExpense},{where:{id:id}, transaction: t });
+        
+            return user;
+        
+          });
+    
            res.status(201).json({
             error: false,
             message: 'Appiontments created Successfully',
-            data: appntResponse
+            data: result
         })
            
     }catch(err){
@@ -106,18 +106,34 @@ const deleteAppntdata = async (req,res)=>{
     try{
         let id=req.params.id;
         
-       let deleted= expenseModel.destroy({
+    //    let deleted=await expenseModel.destroy({
+    //         where: {
+    //           id: id
+    //         }
+    //       })
+    let delData= await expenseModel.findOne({where:{id:id}})
+    let subExpense = parseInt(req.user.totalExpenses)-parseInt(delData.dataValues.expense);
+    console.log(subExpense);
+    const result = await sequelize.transaction(async (t) => {
+         let subExpense = parseInt(req.user.totalExpenses)-parseInt(delData.dataValues.expense);
+       
+         const user = await userModel.update({totalExpenses:subExpense},{where:{id:req.user.id}, transaction: t });
+          
+        await expenseModel.destroy({
             where: {
-              id: id,
-              user_id: req.user.id
+              id: id
             }
           })
-       if(deleted){
+        return user;
+    
+      });
+         
+    
             res.status(200).json({
                   error: false,
                   message: 'Appointment Deleted Successfully',
             })
-       }
+     
            
     }catch(err){
        console.log(err);
