@@ -9,6 +9,7 @@ const sequelize = require('./util/database');
 const app = express();
 
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const userRouter = require('./routes/userRouter.js');
 const expenseRouter = require('./routes/expenseRouter.js');
