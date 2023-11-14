@@ -11,6 +11,9 @@
                 justify-content: center; 
               
             }
+            .logot{
+                margin-right: 20px;
+            }
             #header{
                 text-align: center;
             }
@@ -41,14 +44,36 @@
                 padding: 8px;
                
             }
+            .nbar{
+                align-items: center;
+            }
+            .front{
+                display: flex;
+                padding: 30px;
+                justify-content: space-between;
+            }
             #leaderboard{
                 margin-left: 10px;
             }
-            form{
+            #eform{
                 padding: 40px;
-                margin: auto;
+               display: flex;
+               flex-direction: column;
                 width: 450px;
                 border: 1px solid orange;
+            }
+            .profilebox{
+                width: 400px;
+                background-color: aqua;
+            }
+            .leadbox{
+                width: 400px;  
+            }
+            .profileboxInner{
+               padding: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
             }
             #time{
                 display: flex;
@@ -156,12 +181,50 @@ function parseJwt (token) {
                     
                 }
 
+        async function renderCandyItems() {
+
+                    let candyItems;
+                    const token =JSON.parse(localStorage.getItem('token'));
+                        try{
+                            const {data}=await axios.get('http://localhost:8000/expense',{headers:{"Authorization":token}});
+                            candyItems= data.data;
+
+                        }catch(err){
+                            console.log(err);
+                        }
+                            
+
+                    const tableBody = document.querySelector('.candies-table tbody');
+
+                    // Clear the table before re-rendering to avoid duplicating items
+                    tableBody.innerHTML = '';
+
+                    // Loop through the array and create table rows for each candy item
+                    candyItems.forEach(item => {
+                    const row = document.createElement('tr');
+
+                    row.innerHTML = `
+                    <th scope="row">${item.id}</th>
+                    <td>${item.category}</td>
+                    <td>${item.description}</td>
+                    <td>$${item.expense}</td>
+                    <td>${item.createdAt}</td>
+                    `;
+
+                    tableBody.appendChild(row);
+                    });
+        }
+
+
+
         window.onload =()=>{
 
             const form =document.querySelector("form");
             const buton =document.querySelector("subut");
 
-            
+        
+            renderCandyItems();
+
 
             form.addEventListener('submit', e=>{
                 if(!form.checkValidity()){
@@ -387,8 +450,45 @@ function parseJwt (token) {
                 
         }
     </script>
-    <div class="container">
-        <button id="rzp-button1">Buy Premium</button>
+    <div >
+
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">E-Tracker</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+              <ul class="navbar-nav nbar justify-content-end" >
+                <li class="nav-item active">
+                  <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Features</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Pricing</a>
+                </li>
+                <li> <button id="rzp-button1">Buy Premium</button></li>
+              
+              </ul>
+                
+            </div>
+            <div class="logot">
+                <button id="leaderboard"  class="btn btn-primary">Show LeaderBoard</button>
+                <button  class="btn btn-danger">Logout</button>
+            </div>
+          </nav>
+
+
+
+
+
+
+
+
+
+       
         <div id="premumuser">
             <div class="preuser">
                 <span>Your a preimum user</span>
@@ -398,44 +498,66 @@ function parseJwt (token) {
         </div>
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
        
-    <form novalidate onSubmit="handleSubmit(event)">
-
-       <div id="header">
-         <h1>Expense Tracker</h1>
-       </div>
-          <div class="form-floating mt-3">
-            <input  type="number" id ="expense"class="form-control" placeholder="Enter desc" required>
-            <label for="expense" class="form-label">Add Expense:</label>
-          </div>
-
-          <div class="form-floating mt-3">
-            <input type="text" class="form-control"  id ="desc" placeholder="Enter desc" required>
-            <label for="desc" class="form-label" >Choose Description:</label>
-            <!-- <div class="invalid-feedback">Invalid desc</div> -->
-          </div>
-            
-          <div class="mt-3">
-            <select id="categorySelect" class="form-select p-3" aria-label="Default select example">
-                <option selected>Choose a Category</option>
-                <option value="Fuel">Fuel</option>
-                <option value="Food">Food</option>
-                <option value="Electricity">Electricity</option>
-                <option value="Movie">Movie</option>
-              </select>
-          </div>
+   <div class="front">
+    <div class="profilebox ">
+        <div class="profileboxInner">
+        <img src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp" class="rounded-circle" style="width: 150px;"
+         alt="Avatar" />
+         <h5 class="mb-2"><strong>John Doe</strong></h5>
+         <h5 class="mb-2"><strong>John@gmail.com</strong></h5>
+         <div class="premumuser">
+            <span class="fw-bold fs-5">preimum user</span>
+         </div>
+        </div>
+    </div>
+    <div class="leadbox ">
+        <div class="profileboxInner">
+            <div id="user">
+                <ul id="leaderboardDiv">
         
-          <input type="hidden" id="editItemId" name="editItemId">
-            <!-- <div class="col-12 mt-3">
-                <label for="fexpense"  class="form-label" >Date of expense:</label>
-                    <div class="input-group">
-                            <input type="date" id="seldate" class="form-control" expense="birthday">                    
-                            <input type="time" id="seltime" class="form-control" expense="appt">
-                    </div>  
-            </div> -->
-            
-         <input type="submit" id ="sub-button" class="subut" value="Add Expenses">
-    </form> 
-    <div id="user">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <form id="eform" novalidate onSubmit="handleSubmit(event)">
+
+        <div id="header">
+          <h3>Add Your Expenses</h3>
+        </div>
+           <div class="form-floating mt-3">
+             <input  type="number" id ="expense"class="form-control" placeholder="Enter desc" required>
+             <label for="expense" class="form-label">Add Expense:</label>
+           </div>
+ 
+           <div class="form-floating mt-3">
+             <input type="text" class="form-control"  id ="desc" placeholder="Enter desc" required>
+             <label for="desc" class="form-label" >Choose Description:</label>
+             <!-- <div class="invalid-feedback">Invalid desc</div> -->
+           </div>
+             
+           <div class="mt-3">
+             <select id="categorySelect" class="form-select p-3" aria-label="Default select example">
+                 <option selected>Choose a Category</option>
+                 <option value="Fuel">Fuel</option>
+                 <option value="Food">Food</option>
+                 <option value="Electricity">Electricity</option>
+                 <option value="Movie">Movie</option>
+               </select>
+           </div>
+         
+           <input type="hidden" id="editItemId" name="editItemId">
+             <!-- <div class="col-12 mt-3">
+                 <label for="fexpense"  class="form-label" >Date of expense:</label>
+                     <div class="input-group">
+                             <input type="date" id="seldate" class="form-control" expense="birthday">                    
+                             <input type="time" id="seltime" class="form-control" expense="appt">
+                     </div>  
+             </div> -->
+             
+          <input type="submit" id ="sub-button" class="subut" value="Add Expenses">
+     </form> 
+   </div>
+    <!-- <div id="user">
         <ul id="parentDiv">
 
         </ul>
@@ -445,6 +567,22 @@ function parseJwt (token) {
         <ul id="leaderboardDiv">
 
         </ul>
+    </div> -->
+    <div class="container candies-table">
+        <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">id</th>
+            <th scope="col">category</th>
+            <th scope="col">Description</th>
+            <th scope="col">Price</th>
+            <th scope="col">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+         
+        </tbody>
+        </table>
     </div>
 </div>
 </body>
