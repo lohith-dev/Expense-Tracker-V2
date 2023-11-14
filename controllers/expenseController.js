@@ -1,11 +1,14 @@
 const expenseModel = require('../model/Expense.js');
 const userModel = require('../model/User.js')
 const Sequelize = require('../util/database.js')
-const sequelize = require('../util/database.js')
+const sequelize = require('../util/database.js');
+const AWS = require('aws-sdk');
+const fileModel = require('../model/FilesDownloaded.js')
 
 const getappntdata = async (req,res)=>{
      try{
         let {id}=req.user;
+        console.log("ppppppppppppppppppp");
             const userData = await expenseModel.findAll({where:{user_id:id}});
       
             let noOfRecords = userData.length;
@@ -38,6 +41,51 @@ const getSingleAppntData = async (req,res)=>{
      }catch(err){
         console.log(err);
      }
+}
+
+const uploadToS3 =(data,filename)=>{
+    const BUCKET_NAME ='e-track123';
+    // const userKey =process.env.IAM_USER_KEY;
+    // const userSecret=process.env.IAM_USER_SECRET;
+
+    let s3bucket = new AWS.S3({
+        accessKeyId:process.env.IAM_USER_KEY,
+        secretAccessKey:process.env.IAM_USER_SECRET,
+        Bucket : BUCKET_NAME
+    })
+    var params ={
+        Bucket : BUCKET_NAME,
+        Key:filename,
+        Body:data,
+        ACL:'public-read'
+    }
+    return new Promise ((resolve,reject)=>{
+        s3bucket.upload(params,(err,data)=>{
+            if(err){
+                reject(err)
+            }else{
+                resolve(data.Location)
+              
+            }
+        })
+    })
+}
+
+const downloadExpense = async (req,res)=>{
+   try{
+    const expenses = await req.user.getExpenses();
+    console.log(expenses);
+    const stringfiedExpenses = JSON.stringify(expenses);
+    const userId= req.user.id;
+    const filename = `Expense${userId}/${new Date()}.txt`;
+    const fileURL=await uploadToS3(stringfiedExpenses,filename);
+    const data = await fileModel.create({fileUrl:fileURL,userId:req.user.id})
+    if(data){
+        res.status(200).json({fileurl:fileURL,success:true});
+    }
+   }catch(err){
+    res.status(500).json({fileurl:'',success:false, err:err});
+   }
 }
 
 const postAppntdata = async (req,res)=>{
@@ -146,4 +194,5 @@ module.exports={
     updAppntdata,
     deleteAppntdata,
     getSingleAppntData,
+    downloadExpense,
 }

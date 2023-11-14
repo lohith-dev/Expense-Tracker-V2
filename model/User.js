@@ -2,7 +2,8 @@ const Sequelize = require('sequelize');
 const expenseModel= require('./Expense.js')
 const sequelize  = require('../util/database');
 const orderModel = require('./Order.js')
-
+const forgotPassModel = require('./ForgotPasswordRequests.js')
+const fileModel = require('../model/FilesDownloaded.js')
 
 const User = sequelize.define('User',{
   id: {
@@ -42,5 +43,12 @@ expenseModel.belongsTo(User, { foreignKey: 'userId' });
 
 User.hasMany(orderModel, { foreignKey: 'userId' });  
 orderModel.belongsTo(orderModel, { foreignKey: 'userId' });
+
+User.hasMany(forgotPassModel, { foreignKey: 'userId' });  
+forgotPassModel.belongsTo(User, { foreignKey: 'userId' });
+
+
+User.hasMany(fileModel, { foreignKey: 'userId' });  
+fileModel.belongsTo(User, { foreignKey: 'userId' });
 
 module.exports = User;
