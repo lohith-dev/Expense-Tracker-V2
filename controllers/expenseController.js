@@ -3,21 +3,48 @@ const userModel = require('../model/User.js')
 const Sequelize = require('../util/database.js')
 const sequelize = require('../util/database.js');
 const AWS = require('aws-sdk');
-const fileModel = require('../model/FilesDownloaded.js')
+const fileModel = require('../model/FilesDownloaded.js');
+
+
+async function fetchDataFromDatabase(offset, limit) {
+    const result = await expenseModel.findAll({
+      offset,
+      limit,
+    });
+  
+    return result;
+  }
 
 const getappntdata = async (req,res)=>{
      try{
         let {id}=req.user;
-        console.log("ppppppppppppppppppp");
-            const userData = await expenseModel.findAll({where:{user_id:id}});
+        const page = req.query.page || 1;
+    
+        const itemsPerPage = 2; 
+
+     
+        const offset = (page - 1) * itemsPerPage;
+
+        const totalItemCount = await expenseModel.count();
+
+        const data = await fetchDataFromDatabase(offset, itemsPerPage);
+
+        res.status(200).json({
+          success: true,
+          data,
+          currentPage: page,
+          totalPages: Math.ceil(totalItemCount / itemsPerPage),
+        });
+
+            // const userData = await expenseModel.findAll({where:{user_id:id}});
       
-            let noOfRecords = userData.length;
-            res.status(200).json(
-                {
-                    noOfRecords: noOfRecords,
-                    data: userData,
-                }
-            );
+            // let noOfRecords = userData.length;
+            // res.status(200).json(
+            //     {
+            //         noOfRecords: noOfRecords,
+            //         data: userData,
+            //     }
+            // );
             
      }catch(err){
         console.log(err);
