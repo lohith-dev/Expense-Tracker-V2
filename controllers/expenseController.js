@@ -18,10 +18,12 @@ async function fetchDataFromDatabase(offset, limit) {
 const getappntdata = async (req,res)=>{
      try{
         let {id}=req.user;
-        const page = req.query.page || 1;
-    
-        const itemsPerPage = 2; 
-
+        const page = parseInt(req.query.page) || 1;
+        console.log("page",req.query.page);
+        const itemsPerPage = parseInt(req.query.itemsPerPage) || 2;
+        console.log("itemsperpage",req.query.itemsPerPage);
+        // const itemsPerPage = 2; 
+        // console.log(itemsPerPage);
      
         const offset = (page - 1) * itemsPerPage;
 
